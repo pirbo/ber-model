@@ -1,0 +1,21 @@
+%var: 'to_inf' 0
+
+'open 3' DNA(e5~lig?, e3~lig?) ->  @ 'to_inf'
+
+%var: 'ne5' DNA(e5!_)
+%var: 'ne3' DNA(e3!_)
+%def: "dotSnapshots" "yes"
+
+%mod: [E]=0 do $UPDATE 'to_inf' [inf]
+
+%mod: 'ne3' + 'ne5' = 0 do \
+      $SNAPSHOT <"open_dna_2">; $STOP
+
+%def: "dumpIfDeadlocked" "yes"
+
+%agent: ErrorProtein()
+%token: LP_move
+%token: APE_perf
+%token: POLb_lyase_t
+%token: POLb_polymerase
+%token: LIG3_lig_t

@@ -1,0 +1,34 @@
+{
+    "meta" : {
+	"experiment_name": "w_polb_neut",
+	"runs": 8,
+	"plot_points": 10000,
+	"dna_file": "dna/dna100Kbp.ka",
+	"time": 180,
+	"parallel": 2,
+	"model": ["damage", "alter_sliding", "DG", "APE1", "POLb", "LIG3", "XRCC1"]
+    },
+    "data" : {
+	"constants": {
+	    "volume": 1e-14,
+	    "default_bimolecular_binding": [1e-5, 1e-3],
+	    "default_unimolecular_binding": [1e1, 1e4],
+	    "default_catalytic_rate": [0.1, 20],
+	    "default_unbinding": [1e-3, 1e-1],
+	    "default_sliding_rate": [1e3, 1e4]
+	},
+	"fields": {
+		"deamination_percentage": {"type": "constant", "value": 2},
+	    "initial_POLb": {"type": "constant", "value": 2767},
+	    "DG_DNA_bind": {"type": "random_uniform", "value": "default_bimolecular_binding"},
+	    "APE1_DNA_bind": {"type": "random_uniform", "value": "default_bimolecular_binding"},
+	    "POLb_DNA_bind": {"type": "random_uniform", "value": "default_bimolecular_binding"},
+	    "LIG3_DNA_bind": {"type": "random_uniform", "value": "default_bimolecular_binding"},
+	    "XRCC1_APE1_bind": {"type": "random_uniform", "value": "default_bimolecular_binding"},
+	    "XRCC1_POLb_bind": {"type": "random_uniform", "value": "default_bimolecular_binding"},
+	    "XRCC1_LIG3_bind": {"type": "random_uniform", "value": "default_bimolecular_binding"},
+	    "XRCC1_DNA_bind": {"type": "random_uniform", "value": "default_bimolecular_binding"},
+	    "XRCC1_XRCC1_bind": {"type": "random_uniform", "value": "default_bimolecular_binding"}
+	}
+    }
+}

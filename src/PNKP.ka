@@ -1,0 +1,30 @@
+#%var: 'PNKP_DNA_bind_AP_5OH' $PNKP_DNA_bind_AP_5OH
+%var: 'PNKP_DNA_bind_AP' $PNKP_DNA_bind_AP
+%var: 'PNKP_DNA_bind_AP_unary' $PNKP_DNA_bind_AP_unary
+%var: 'PNKP_DNA_unbind' $PNKP_DNA_unbind_AP
+%var: 'PNKP_lyase' $PNKP_lyase
+
+## PNKP agent's actions 
+
+## PNKP binds to AP site, unbinding, repairing 3' end
+## (PNKP binds to XRCC1 [Della-Maria et al '12])
+
+#'PNKP AP 5OH site binding' \
+#      PNKP(dbd  ), DNA(e3~P!1), DNA(e5~NA!1, pnkp,   base~AP?, e3~NA!2), DNA(e5~OH!2) -> \
+#      PNKP(dbd!3), DNA(e3~P!1), DNA(e5~NA!1, pnkp!3, base~AP?, e3~NA!2), DNA(e5~OH!2)  \
+#      @ 'PNKP_DNA_bind_AP_5OH'
+
+'PNKP AP site binding' \
+      PNKP(dbd  ), DNA(e3~P!1), DNA(e5~NA!1, pnkp,   base~AP?) -> \
+      PNKP(dbd!3), DNA(e3~P!1), DNA(e5~NA!1, pnkp!3, base~AP?)  \
+      @ 'PNKP_DNA_bind_AP' ('PNKP_DNA_bind_AP_unary':3)
+
+'PNKP site unbinding' \
+      PNKP(dbd!1), DNA(pnkp!1) -> PNKP(dbd), DNA(pnkp) \
+      @ 'PNKP_DNA_unbind'
+
+'PNKP 3-phosphatase action' \
+      PNKP(dbd!1), DNA(e3~P!2 ), DNA(e5~NA!2, pnkp!1) -> \
+      PNKP(dbd), DNA(e3~OH!2),   DNA(e5~NA!2, pnkp  ) \
+      @ 'PNKP_lyase'
+      

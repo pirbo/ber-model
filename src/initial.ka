@@ -1,0 +1,7 @@
+%init: $initial_TDG  DG(type~T)
+%init: $initial_UDG  DG(type~U)
+%init: $initial_APE1 APE1()
+%init: $initial_POLb POLb()
+%init: $initial_LIG3 LIG3()
+%init: $initial_XRCC1 XRCC1()
+%init: $initial_PNKP PNKP()

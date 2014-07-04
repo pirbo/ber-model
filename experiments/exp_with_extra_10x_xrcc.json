@@ -1,0 +1,58 @@
+{
+    "meta" : {
+	"experiment_name": "exp_with_extra_10x_xrcc",
+	"runs": 10,
+	"plot_points": 10000,
+	"time": 900,
+	"parallel": 2,
+	"model": ["damage", "alter_sliding", "DG", "APE1", "POLb", "LIG3", "XRCC1", "PNKP"]
+    },
+    "data" : {
+	"constants": {
+	    "volume": 1e-14,
+	    "default_bimolecular_binding": [1e-5, 1e-3],
+	    "default_unimolecular_binding": [1e1, 1e4],
+	    "default_catalytic_rate": [0.1, 20],
+	    "default_unbinding": [1e-3, 1e-1],
+	    "default_sliding_rate": [1e3, 1e4]
+	},
+	"fields": {
+	    "deamination_percentage": {"type": "constant", "value": 50},
+	    "initial_XRCC1": {"type": "constant", "value": 12330},
+	    "UDG_DNA_anchors_AP": {"type": "random_uniform", "value": "default_unimolecular_binding"},
+	    "TDG_DNA_anchors_AP": {"type": "random_uniform", "value": "default_unimolecular_binding"},
+	    "OGG_DNA_anchors_AP": {"type": "random_uniform", "value": "default_unimolecular_binding"},
+	    "NEIL_DNA_anchors_AP": {"type": "random_uniform", "value": "default_unimolecular_binding"},
+	    "UDG_DNA_release": {"type": "random_uniform", "value": "default_unbinding"},
+	    "TDG_DNA_release": {"type": "random_uniform", "value": "default_unbinding"},
+	    "NEIL_DNA_release": {"type": "random_uniform", "value": "default_unbinding"},
+	    "OGG_DNA_release": {"type": "random_uniform", "value": "default_unbinding"},
+	    "NEIL_excision": {"type": "random_uniform", "value": "default_catalytic_rate"},
+	    "OGG_excision": {"type": "random_uniform", "value": "default_catalytic_rate"},
+	    "APE1_DNA_bind_AP_unary": {"type": "random_uniform", "value": "default_unimolecular_binding"},
+	    "APE1_DNA_unbind_AP": {"type": "random_uniform", "value": "default_unbinding"},
+	    "POLb_DNA_bind_AP": {"type": "random_uniform", "value": "default_bimolecular_binding"},
+	    "POLb_DNA_bind_AP_unary": {"type": "random_uniform", "value": "default_unimolecular_binding"},
+	    "POLb_DNA_unbind_AP": {"type": "random_uniform", "value": [1e-1, 1e0]},
+	    "LIG3_DNA_bind": {"type": "random_uniform", "value": "default_bimolecular_binding"},
+	    "LIG3_DNA_bind_unary": {"type": "random_uniform", "value": "default_unimolecular_binding"},
+	    "LIG3_DNA_unbind": {"type": "random_uniform", "value": "default_unbinding"},
+	    "XRCC1_APE1_bind": {"type": "random_uniform", "value": "default_bimolecular_binding"},
+	    "XRCC1_APE1_bind_unary": {"type": "random_uniform", "value": "default_unimolecular_binding"},
+	    "XRCC1_APE1_unbind": {"type": "random_uniform", "value": "default_unbinding"},
+	    "XRCC1_POLb_bind": {"type": "random_uniform", "value": "default_bimolecular_binding"},
+	    "XRCC1_POLb_bind_unary": {"type": "random_uniform", "value": "default_unimolecular_binding"},
+	    "XRCC1_POLb_unbind": {"type": "random_uniform", "value": "default_unbinding"},
+	    "XRCC1_LIG3_bind": {"type": "random_uniform", "value": "default_bimolecular_binding"},
+	    "XRCC1_LIG3_bind_unary": {"type": "random_uniform", "value": "default_unimolecular_binding"},
+	    "XRCC1_LIG3_unbind": {"type": "random_uniform", "value": "default_unbinding"},
+	    "XRCC1_DNA_bind": {"type": "Kd_constraint",  "value": ["XRCC1_DNA_unbind", 5.7e-7]},
+	    "XRCC1_DNA_bind_unary": {"type": "random_uniform", "value": "default_unimolecular_binding"},
+	    "XRCC1_DNA_unbind": {"type": "random_uniform", "value": "default_unbinding"},
+	    "PNKP_DNA_bind_AP_5OH": {"type": "Kd_constraint", "value": ["PNKP_DNA_unbind_AP", 2.5e-7]},
+	    "PNKP_DNA_bind_AP_5P": {"type": "Kd_constraint",  "value": ["PNKP_DNA_unbind_AP", 1.5e-6]},
+	    "PNKP_DNA_unbind_AP": {"type": "random_uniform", "value": "default_unbinding"},
+	    "PNKP_lyase":  {"type": "random_uniform", "value": "default_catalytic_rate"}
+	}
+    }
+}

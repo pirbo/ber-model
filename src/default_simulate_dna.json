@@ -1,0 +1,97 @@
+{
+    "meta": {
+	"temp_dir": "temp",
+	"out_dir": "out",
+	"out": "sim",
+	"dna_file": "dna/dna25Kbp.ka",
+	"time": 150,
+	"plot_points": 1000,
+	"model": ["damage", "alter_sliding", "DG", "APE1", "POLb", "LIG3", "XRCC1", "xrcc_dimer"]
+    },
+    "data": {
+	"deamination_percentage": 10,
+	"damage_steps": 2,
+	"initial_TDG": 0,
+	"initial_UDG": 2230,
+	"initial_APE1": 28000,
+	"initial_POLb": 2700,
+	"initial_LIG3": 400,
+	"initial_XRCC1": 1200,
+	"initial_PNKP": 0,
+	
+	"NEIL_DNA_anchors_AP": "k_on",
+	"OGG_DNA_anchors_AP": "k_on",
+	"DG_DNA_bind": "k_on",
+	"DG_DNA_anchors": "k_on_unary",
+	
+	"DG_DNA_slide": 1e4,
+	
+	"TDG_excision_TG": 0.00367,
+	"UDG_excision": 16,
+
+	"UDG_DNA_release_mismatch": "k_off",
+	"TDG_DNA_release_mismatch": "k_off",	
+	"UDG_DNA_release_AP": "k_off",
+	"TDG_DNA_release_AP": "k_off",
+
+	"APE1_DNA_bind": "k_on",
+	"APE1_DNA_bind_unary": "k_on_unary",
+	"APE1_incision": 3,
+	"APE1_PUA": 0.05,
+
+	"POLb_DNA_bind": "k_on",
+	"POLb_DNA_bind_unary": "k_on_unary",
+	"POLb_lyase": 0.75,
+	"POLb_polymerase": 0.45,
+	"POLb_LP_polymerase": 0.45,
+
+	"LIG3_DNA_bind_unary": "k_on_unary",
+	"LIG3_ligase": 0.04,
+
+	"XRCC1_APE1_bind": "k_on",
+	"XRCC1_APE1_bind_unary": "k_on_unary",
+	
+	"XRCC1_POLb_bind": "k_on",
+	"XRCC1_POLb_bind_unary": "k_on_unary",
+	
+	"XRCC1_LIG3_bind": "k_on",
+	"XRCC1_LIG3_bind_unary": "k_on_unary",
+	
+	"XRCC1_DNA_bind": "k_on",
+	"XRCC1_DNA_bind_unary": "k_on_unary",
+	
+	"XRCC1_PNKP_bind": "k_on",
+	"XRCC1_PNKP_bind_unary": "k_on_unary",
+	"XRCC1_PNKP_unbind": "k_off",
+	
+	"XRCC1_XRCC1_bind": "k_on",
+	
+	"constraints": {
+	    "defaults": {
+		"k_on": 1e-4,
+		"k_off": 1e-1,
+		"k_on_unary": 1e4,
+		"volume": 6e-13 
+	    },
+	    "kD": [
+		["DG_DNA_bind", "DG_DNA_unbind", 48e-9],
+		["APE1_DNA_bind", "APE1_DNA_unbind_ns", 1e-7],
+		["APE1_DNA_bind", "APE1_DNA_unbind_AP", 1e-9],
+		["APE1_DNA_bind", "APE1_DNA_unbind_gapped", 5e-9],
+		["POLb_DNA_bind", "POLb_DNA_unbind_ns", 1e-7],
+		["POLb_DNA_bind", "POLb_DNA_unbind_gapped_dRP", 1e-9],
+		["POLb_DNA_bind", "POLb_DNA_unbind_gapped", 1e-9],
+		["POLb_DNA_bind", "POLb_DNA_unbind_nicked", 1e-8],
+		["POLb_DNA_bind", "POLb_DNA_unbind_AP", 1e-7],
+		["LIG3_DNA_bind", "LIG3_DNA_unbind", 5e-9],
+		["XRCC1_APE1_bind", "XRCC1_APE1_unbind", 1e-6],
+		["XRCC1_POLb_bind", "XRCC1_POLb_unbind", 110e-9],
+		["XRCC1_DNA_bind", "XRCC1_DNA_unbind_ns", 230e-9],
+		["XRCC1_DNA_bind", "XRCC1_DNA_unbind_gapped", 40e-9],
+		["XRCC1_DNA_bind", "XRCC1_DNA_unbind_nicked", 65e-9],
+		["XRCC1_LIG3_bind", "XRCC1_LIG3_unbind", 100e-9],
+		["XRCC1_XRCC1_bind", "XRCC1_XRCC1_unbind", 57e-6]
+	    ]
+	}
+    }
+}

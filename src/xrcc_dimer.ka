@@ -1,0 +1,6 @@
+%var: 'XRCC1_XRCC1_bind' $XRCC1_XRCC1_bind
+%var: 'XRCC1_XRCC1_unbind' $XRCC1_XRCC1_unbind
+
+## XRCC1 dimerises
+'XRCC1 (un)binds XRCC1' \
+       XRCC1(xrc), XRCC1(xrc) <-> XRCC1(xrc!1), XRCC1(xrc!1) @ 'XRCC1_XRCC1_bind', 'XRCC1_XRCC1_unbind'

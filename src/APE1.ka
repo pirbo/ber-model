@@ -1,0 +1,74 @@
+%var: 'APE1_DNA_bind' $APE1_DNA_bind
+%var: 'APE1_DNA_bind_unary' $APE1_DNA_bind_unary
+
+%var: 'APE1_DNA_unbind_ns' $APE1_DNA_unbind_ns
+%var: 'APE1_DNA_unbind_AP' $APE1_DNA_unbind_AP 
+%var: 'APE1_DNA_unbind_gapped' $APE1_DNA_unbind_gapped
+
+%var: 'APE1_incision' $APE1_incision
+%var: 'APE1_PUA' $APE1_PUA
+
+## APE1 agent's actions
+
+## APE1 binds DNA (in the absence or presence of XRCC1, on gapped or nicked DNA)
+
+'APE1 binds AP or gapped DNA 1' \
+      APE1(dbd, xrc), DNA(ape,base~AP!_) -> APE1(dbd!1, xrc),DNA(ape!1,base~AP!_) \
+      @ 'APE1_DNA_bind'
+'APE1 binds AP or gapped DNA 2' \
+      APE1(dbd), DNA(ape,base~AP!_, xrc) -> APE1(dbd!1),DNA(ape!1,base~AP!_,xrc) \
+      @ 'APE1_DNA_bind'
+'APE1 binds AP or gapped DNA unary' \
+      APE1(dbd, xrc!1), DNA(ape,base~AP!_, xrc!2),XRCC1(ape!1, dbd!2) -> \
+      APE1(dbd!3, xrc!1),DNA(ape!3,base~AP!_,xrc!2),XRCC1(ape!1, dbd!2) \
+      @ 'APE1_DNA_bind_unary'
+
+'APE1 binds nicked DNA 1' \
+      APE1(dbd,xrc),DNA(ape,base!_,e3~OH?) -> APE1(dbd!1,xrc),DNA(ape!1,base!_,e3~OH?) \
+      @ 'APE1_DNA_bind'
+'APE1 binds nicked DNA 2' \
+      APE1(dbd),DNA(ape,base!_,e3~OH?,xrc) -> APE1(dbd!1),DNA(ape!1,base!_,e3~OH?,xrc) \
+      @ 'APE1_DNA_bind'
+'APE1 binds nicked DNA unary' \
+      APE1(dbd,xrc!1),DNA(ape,base!_,e3~OH?,xrc!2),XRCC1(ape!1,dbd!2) -> \
+      APE1(dbd!3,xrc!1),DNA(ape!3,base!_,e3~OH?,xrc!2),XRCC1(ape!1,dbd!2) \
+      @ 'APE1_DNA_bind_unary'
+
+
+
+## APE1 does not stick to normal duplex and incised DNA
+'APE1 non specific DNA unbinding' \
+      APE1(dbd!1), DNA(ape!1, base_state~OK) -> \
+      APE1(dbd  ), DNA(ape  , base_state~OK) \
+      @ 'APE1_DNA_unbind_ns'
+
+## AP unbinding for APE1 (specific binding)
+'APE1 AP site unbinding' \
+      APE1(dbd!1), DNA(ape!1, base_state~excised) -> \
+      APE1(dbd  ), DNA(ape,  base_state~excised) \
+      @ 'APE1_DNA_unbind_AP' 
+
+## gapped DNA unbinding for APE1 (less specific binding) 
+'APE1 gapped DNA unbinding' \
+      APE1(dbd!1), DNA(ape!1, base_state~gapped) -> \
+      APE1(dbd  ), DNA(ape,  base_state~gapped) \
+      @ 'APE1_DNA_unbind_gapped' 
+
+
+## APE1 catalytic activities
+
+## hypothesis --> AP endonuclease will prevent DG from rebinding to the AP site because DG requires DNA to be ligated (to be verified)
+%token: APE_perf
+'APE1 5-endonuclease' \
+      APE1(dbd!1), DNA(e3~lig!0), DNA(e5~lig!0, base_state~excised, base~AP?, ape!1, e3~lig!2), DNA(e5~lig!2) -> \
+      APE1(dbd), DNA(e3~OH !0), DNA(e5~NA!0, base_state~gapped,  base~AP?, ape, e3~NA!2), DNA(e5~dRP!2) | 1:APE_perf \
+      @ 'APE1_incision'
+
+%obs: 'ape_perf' |APE_perf|
+
+## [Kim et al '13]
+'APE1 3-phosphodiesterase' \
+      APE1(dbd!1), DNA(e3~PUA!0), DNA(e5~NA!0, ape!1) -> \
+      APE1(dbd), DNA(e3~OH !0), DNA(e5~NA!0, ape) \
+      @ 'APE1_PUA'
+

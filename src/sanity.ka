@@ -1,0 +1,19 @@
+%agent: ErrorProtein()
+
+# 'ErrProGen e5~lig on AP' DNA(e5~lig?, base~AP?) -> DNA(e5~lig?, base~AP?), ErrorProtein() @ 1
+# 'ErrProGen e5~dRP on AP' DNA(e5~dRP?, base~AP?) -> DNA(e5~dRP?, base~AP?), ErrorProtein() @ 1
+# 'ErrProGen e5~P on AP' DNA(e5~P?, base~AP?) -> DNA(e5~P?, base~AP?), ErrorProtein() @ 1
+# 'ErrProGen e5~OH on AP' DNA(e5~OH?, base~AP?) -> DNA(e5~OH?, base~AP?), ErrorProtein() @ 1
+# 'ErrProGen e3~lig on AP' DNA(e3~lig?, base~AP?) -> DNA(e3~lig?, base~AP?), ErrorProtein() @ 1
+# 'ErrProGen e3~dRP on AP' DNA(e3~dRP?, base~AP?) -> DNA(e3~dRP?, base~AP?), ErrorProtein() @ 1
+# 'ErrProGen e3~P on AP' DNA(e3~P?, base~AP?) -> DNA(e3~P?, base~AP?), ErrorProtein() @ 1
+# 'ErrProGen e3~OH on AP' DNA(e3~OH?, base~AP?) -> DNA(e3~OH?, base~AP?), ErrorProtein() @ 1
+# 'ErrProGen e3~PUA on AP' DNA(e3~PUA?, base~AP?) -> DNA(e3~PUA?, base~AP?), ErrorProtein() @ 1
+
+%var: 'ErrProtein' ErrorProtein()
+
+#%mod: [true] do $TRACK 'ErrProtein' [true]
+#%mod: [true] do $TRACK 'damaged' [true]
+#%mod: [true] do $TRACK 'unbound DG after APE1 incision' [true]
+%mod: [true] do $TRACK 'bound LIG3' [true]
+%def: "displayCompression" "weak"

@@ -1,0 +1,41 @@
+## synthesise DNA
+
+# Rates of synthesis
+# Growing rate
+%var: 'kGC' $kGC
+%var: 'kAT' $kAT
+# Seed rate
+%var: 'sGC' $sGC
+%var: 'sAT' $sAT
+
+# DNA strands control
+%init: Cpt <- 0
+
+'seedAT' -> DNA(base~A!0, init~A, e5~lig, base_state~OK, meth~false), \
+	 DNA(base~T!0, init~T, e5~lig, base_state~OK, meth~false) | 1:Cpt @ 'sAT' 
+'seedGC' -> DNA(base~G!0, init~G, e5~lig, base_state~OK, meth~false), \
+	 DNA(base~C!0, init~C, e5~lig, base_state~OK, meth~false) | 1:Cpt @ 'sGC'
+
+%mod: |Cpt|=$strands do ($UPDATE 'sAT' 0.0 ; $UPDATE 'sGC' 0.0)
+
+#Synthesis control
+%var: 'C' DNA(base~C?) 
+%var: 'G' DNA(base~G?) 
+%var: 'N' DNA()
+
+%obs: 'GC content' ('C'+'G')/('N'+0.1)
+%mod: [E]=[Emax] do $SNAPSHOT <"$out">
+
+# Rules for synthesising DNA:
+'growAT' DNA(base!0, e5), DNA(base!0,e3) -> DNA(base!0, e5!1), DNA(base!0, e3!2), \
+	 DNA(e3~lig!1, base~A!3, init~A, base_state~OK, meth~false, e5~lig), \
+	 DNA(e5~lig!2, base~T!3, init~T, base_state~OK, meth~false, e3~lig) @ 'kAT'
+'growTA' DNA(base!0, e5), DNA(base!0,e3) -> DNA(base!0, e5!1), DNA(base!0, e3!2), \
+	 DNA(e3~lig!1, base~T!3, init~T, base_state~OK, meth~false, e5~lig), \
+	 DNA(e5~lig!2, base~A!3, init~A, base_state~OK, meth~false, e3~lig) @ 'kAT'
+'growCG' DNA(base!0, e5), DNA(base!0,e3) -> DNA(base!0, e5!1), DNA(base!0, e3!2), \
+	 DNA(e3~lig!1, base~C!3, init~C, base_state~OK, meth~false, e5~lig), \
+	 DNA(e5~lig!2, base~G!3, init~G, base_state~OK, meth~false, e3~lig) @ 'kGC'
+'growGC' DNA(base!0, e5), DNA(base!0,e3) -> DNA(base!0, e5!1), DNA(base!0, e3!2), \
+	 DNA(e3~lig!1, base~G!3, init~G, base_state~OK, meth~false, e5~lig), \
+	 DNA(e5~lig!2, base~C!3, init~C, base_state~OK, meth~false, e3~lig) @ 'kGC'

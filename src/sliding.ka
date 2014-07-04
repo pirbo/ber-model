@@ -1,0 +1,8 @@
+%var: 'DG_DNA_slide' $DG_DNA_slide
+
+## DG slides on DNA to find mismatches (random walk in 3' and 5' direction)
+## DG moves only if the catalytic pocket is empty
+'slide 3' DG(dbd!1, cat), DNA(dg!1, e3!2), DNA(dg, e5!2) -> \
+	  DG(dbd!1, cat), DNA(dg, e3!2), DNA(dg!1, e5!2) @ 'DG_DNA_slide'
+'slide 5' DG(dbd!1, cat), DNA(dg, e3!2), DNA(dg!1, e5!2) -> \
+	  DG(dbd!1, cat), DNA(dg!1, e3!2), DNA(dg, e5!2) @ 'DG_DNA_slide'
