@@ -1,7 +1,7 @@
 %var: 'DG_DNA_AP_find' 0.0001
 
-## This is an alternative to sliding to accelerate computations by directly attaching to damaged bases
+// This is an alternative to sliding to accelerate computations by directly attaching to damaged bases
 
-'DG damage bind (facilitated diff.)' \
-    DNA(dg, base_state~damaged, base!_), DG(dbd, cat) -> DNA(dg!1, base_state~damaged, base!_), DG(dbd!1, cat) \
+'DG damage bind (facilitated diff.)'
+    DNA(dg[.] base_state{damaged}[.] base[_]), DG(dbd[.] cat[.]) -> DNA(dg[1] base_state{damaged}[.] base[_]), DG(dbd[1] cat[.])
     @ 'DG_DNA_AP_find'

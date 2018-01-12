@@ -1,115 +1,114 @@
-%var: 'DG_DNA_bind' $DG_DNA_bind
-%var: 'DG_DNA_unbind' $DG_DNA_unbind
+%var: 'DG_DNA_bind' k_on
+%var: 'DG_DNA_unbind_v' 48e-9
+%var: 'DG_DNA_unbind' (DG_DNA_unbind_v  * av * volume) * DG_DNA_bind
 
-%var: 'DG_DNA_anchors' $DG_DNA_anchors
-#%var: 'NEIL_DNA_anchors_AP' $NEIL_DNA_anchors_AP
-#%var: 'OGG_DNA_anchors_AP' $OGG_DNA_anchors_AP
+%var: 'DG_DNA_anchors' k_on_unary
+//%var: 'NEIL_DNA_anchors_AP' $NEIL_DNA_anchors_AP
+//%var: 'OGG_DNA_anchors_AP' $OGG_DNA_anchors_AP
 
-%var: 'UDG_DNA_release_mismatch' $UDG_DNA_release_mismatch
-%var: 'TDG_DNA_release_mismatch' $TDG_DNA_release_mismatch
-%var: 'UDG_DNA_release_AP' $UDG_DNA_release_AP
-%var: 'TDG_DNA_release_AP' $TDG_DNA_release_AP
-#%var: 'NEIL_DNA_release' $NEIL_DNA_release
-#%var: 'OGG_DNA_release' $OGG_DNA_release
+%var: 'UDG_DNA_release_mismatch' k_off
+%var: 'TDG_DNA_release_mismatch' k_off
+%var: 'UDG_DNA_release_AP' k_off
+%var: 'TDG_DNA_release_AP' k_off
+//%var: 'NEIL_DNA_release' $NEIL_DNA_release
+//%var: 'OGG_DNA_release' $OGG_DNA_release
 
-#%var: 'OGG_excision' $OGG_excision
-%var: 'TDG_excision_TG' $TDG_excision_TG
-%var: 'UDG_excision' $UDG_excision
-#%var: 'NEIL_excision' $NEIL_excision
+//%var: 'OGG_excision' $OGG_excision
+%var: 'TDG_excision_TG' 0.00367
+%var: 'UDG_excision' 16
+//%var: 'NEIL_excision' $NEIL_excision
 
-## DG agent's actions 
+/* DG agent's actions */
 
-## DG binding is unconstrained if catalytic pocket is unbound, however
-## if the cat site is bound, DG is not allowed to rebind to a nucleobase
-'DG ns bind' \
-    DNA(dg), DG(dbd, cat) <-> DNA(dg!1), DG(dbd!1, cat) \
+// DG binding is unconstrained if catalytic pocket is unbound, however
+// if the cat site is bound, DG is not allowed to rebind to a nucleobase
+'DG ns bind'
+    DNA(dg[.]), DG(dbd[.] cat[.]) <-> DNA(dg[1]), DG(dbd[1] cat[.])
     @ 'DG_DNA_bind', 'DG_DNA_unbind'
 
-## DG product inhibition (tight interaction)
-'UDG anchors DNA mismatch' \
-    DNA(e3~lig?, base~U?, dg!1, e5~lig?), DG(dbd!1, cat, type~U) -> \
-    DNA(e3~lig?, base~U?, dg!1, e5~lig?), DG(dbd, cat!1, type~U) @ 'DG_DNA_anchors'
+// DG product inhibition (tight interaction)
+'UDG anchors DNA mismatch'
+    DNA(e3{lig} base{U} dg[1] e5{lig}), DG(dbd[1] cat[.] type{U}[.]) ->
+    DNA(e3{lig} base{U} dg[1] e5{lig}), DG(dbd[.] cat[1] type{U}[.]) @ 'DG_DNA_anchors'
 
-'UDG anchors AP DNA' \
-    DNA(e3~lig?, base~AP?, dg!1, e5~lig?), DG(dbd!1, cat, type~U) -> \
-    DNA(e3~lig?, base~AP?, dg!1, e5~lig?), DG(dbd, cat!1, type~U) @ 'DG_DNA_anchors'
+'UDG anchors AP DNA'
+    DNA(e3{lig} base{AP} dg[1] e5{lig}), DG(dbd[1] cat[.] type{U}[.]) ->
+    DNA(e3{lig} base{AP} dg[1] e5{lig}), DG(dbd[.] cat[1] type{U}[.]) @ 'DG_DNA_anchors'
 
-'TDG anchors DNA mismatch' \
-    DNA(e3~lig?, base_state~damaged, base~T?, dg!1, e5~lig?), DG(dbd!1, cat, type~T) -> \
-    DNA(e3~lig?, base_state~damaged, base~T?, dg!1, e5~lig?), DG(dbd, cat!1, type~T) @ 'DG_DNA_anchors'
+'TDG anchors DNA mismatch'
+    DNA(e3{lig} base_state{damaged}[.] base{T} dg[1] e5{lig}), DG(dbd[1] cat[.] type{T}[.]) ->
+    DNA(e3{lig} base_state{damaged}[.] base{T} dg[1] e5{lig}), DG(dbd[.] cat[1] type{T}[.]) @ 'DG_DNA_anchors'
 
-'TDG anchors AP DNA' \
-    DNA(e3~lig?, base~AP?, dg!1, e5~lig?), DG(dbd!1, cat, type~T) -> \
-    DNA(e3~lig?, base~AP?, dg!1, e5~lig?), DG(dbd, cat!1, type~T) @ 'DG_DNA_anchors'
+'TDG anchors AP DNA'
+    DNA(e3{lig} base{AP} dg[1] e5{lig}), DG(dbd[1] cat[.] type{T}[.]) ->
+    DNA(e3{lig} base{AP} dg[1] e5{lig}), DG(dbd[.] cat[1] type{T}[.]) @ 'DG_DNA_anchors'
 
-#'NEIL anchors DNA mismatch' \
-#    DNA(e3~lig?, base_state~damaged, base~oxoG?, dg!1, e5~lig?), DG(dbd!1, cat, type~NEIL) -> \
-#    DNA(e3~lig?, base_state~damaged, base~oxoG?, dg!1, e5~lig?), DG(dbd, cat!1, type~NEIL) @ 'DG_DNA_anchors'
+//'NEIL anchors DNA mismatch'
+//    DNA(e3~lig?, base_state~damaged, base~oxoG?, dg!1, e5~lig?), DG(dbd!1, cat, type~NEIL) ->
+//    DNA(e3~lig?, base_state~damaged, base~oxoG?, dg!1, e5~lig?), DG(dbd, cat!1, type~NEIL) @ 'DG_DNA_anchors'
 
-#'NEIL anchors AP DNA' \
-#    DNA(e3~lig?, base~AP?, dg!1, e5~lig?), DG(dbd!1, cat, type~NEIL) -> \
-#    DNA(e3~lig?, base~AP?, dg!1, e5~lig?), DG(dbd, cat!1, type~NEIL) @ 'DG_DNA_anchors'
+//'NEIL anchors AP DNA' \
+//    DNA(e3~lig?, base~AP?, dg!1, e5~lig?), DG(dbd!1, cat, type~NEIL) -> \
+//    DNA(e3~lig?, base~AP?, dg!1, e5~lig?), DG(dbd, cat!1, type~NEIL) @ 'DG_DNA_anchors'
 
-#'OGG anchors DNA mismatch' \
-#    DNA(e3~lig?, base_state~damaged, base~oxoG?, dg!1, e5~lig?), DG(dbd!1, cat, type~OGG) -> \
-#    DNA(e3~lig?, base_state~damaged, base~oxoG?, dg!1, e5~lig?), DG(dbd, cat!1, type~OGG) @ 'DG_DNA_anchors'
+//'OGG anchors DNA mismatch' \
+//    DNA(e3~lig?, base_state~damaged, base~oxoG?, dg!1, e5~lig?), DG(dbd!1, cat, type~OGG) -> \
+//    DNA(e3~lig?, base_state~damaged, base~oxoG?, dg!1, e5~lig?), DG(dbd, cat!1, type~OGG) @ 'DG_DNA_anchors'
 
-#'OGG anchors AP DNA' \
-#    DNA(e3~lig?, base~AP?, dg!1, e5~lig?), DG(dbd!1, cat, type~OGG) -> \
-#    DNA(e3~lig?, base~AP?, dg!1, e5~lig?), DG(dbd, cat!1, type~OGG) @ 'DG_DNA_anchors'
-
-
-
-## weak unbinding
-
-'UDG release on mismatch' \
-    DNA(e3~lig?,dg!1, base_state~damaged,e5~lig?), DG(cat!1, type~U) -> \
-    DNA(e3~lig?,dg , base_state~damaged,e5~lig?), DG(cat,    type~U) @ 'UDG_DNA_release_mismatch'
-'TDG release on mismatch' \
-    DNA(e3~lig?,dg!1, base_state~damaged,e5~lig?), DG(cat!1, type~T) -> \
-    DNA(e3~lig?,dg  , base_state~damaged,e5~lig?), DG(cat,   type~T) @ 'TDG_DNA_release_mismatch'
-
-'UDG release on AP' \
-    DNA(e3~lig?,dg!1, base~AP?,e5~lig?), DG(cat!1, type~U) -> \
-    DNA(e3~lig?,dg  , base~AP?,e5~lig?), DG(cat,   type~U) @ 'UDG_DNA_release_AP'
-'TDG release on AP' \
-    DNA(e3~lig?,dg!1, base~AP?,e5~lig?), DG(cat!1, type~T) -> \
-    DNA(e3~lig?,dg  , base~AP?,e5~lig?), DG(cat,   type~T) @ 'TDG_DNA_release_AP'
+//'OGG anchors AP DNA' \
+//    DNA(e3~lig?, base~AP?, dg!1, e5~lig?), DG(dbd!1, cat, type~OGG) -> \
+//    DNA(e3~lig?, base~AP?, dg!1, e5~lig?), DG(dbd, cat!1, type~OGG) @ 'DG_DNA_anchors'
 
 
-#'NEIL release' \
-#    DNA(dg!1), DG(cat!1, dbd,   type~NEIL) -> \
-#    DNA(dg!1), DG(cat,   dbd!1, type~NEIL) @ 'NEIL_DNA_release'
-#'OGG release' \
-#    DNA(dg!1), DG(cat!1, dbd,   type~OGG) -> \
-#    DNA(dg!1), DG(cat,   dbd!1, type~OGG) @ 'OGG_DNA_release'
+
+/* weak unbinding */
+
+'UDG release on mismatch'
+    DNA(e3{lig} dg[1] base_state{damaged}[.] e5{lig}), DG(cat[1] type{U}[.]) ->
+    DNA(e3{lig} dg[.] base_state{damaged}[.] e5{lig}), DG(cat[.] type{U}[.]) @ 'UDG_DNA_release_mismatch'
+'TDG release on mismatch'
+    DNA(e3{lig} dg[1] base_state{damaged}[.] e5{lig}), DG(cat[1] type{T}[.]) ->
+    DNA(e3{lig} dg[.] base_state{damaged}[.] e5{lig}), DG(cat[.] type{T}[.]) @ 'TDG_DNA_release_mismatch'
+
+'UDG release on AP'
+    DNA(e3{lig} dg[1] base{AP} e5{lig}), DG(cat[1] type{U}[.]) ->
+    DNA(e3{lig} dg[.] base{AP} e5{lig}), DG(cat[.] type{U}[.]) @ 'UDG_DNA_release_AP'
+'TDG release on AP'
+    DNA(e3{lig} dg[1] base{AP} e5{lig}), DG(cat[1] type{T}[.]) ->
+    DNA(e3{lig} dg[.] base{AP} e5{lig}), DG(cat[.] type{T}[.]) @ 'TDG_DNA_release_AP'
 
 
-'DG release on normal repaired DNA' \
-    DG(cat!1),DNA(dg!1,base_state~OK) -> DG(cat),DNA(dg,base_state~OK) @  'DG_DNA_unbind'
+//'NEIL release' \
+//    DNA(dg!1), DG(cat!1, dbd,   type~NEIL) -> \
+//    DNA(dg!1), DG(cat,   dbd!1, type~NEIL) @ 'NEIL_DNA_release'
+//'OGG release' \
+//    DNA(dg!1), DG(cat!1, dbd,   type~OGG) -> \
+//    DNA(dg!1), DG(cat,   dbd!1, type~OGG) @ 'OGG_DNA_release'
 
-'DG release on unligated DNA' \
-    DG(cat!1),DNA(e5~NA?,dg!1,e3~NA?) -> DG(cat),DNA(e3~NA?,dg,e5~NA?) @  'DG_DNA_unbind'
+'DG release on normal repaired DNA'
+    DG(cat[1]), DNA(dg[1] base_state{OK}[.]) -> DG(cat[.]), DNA(dg[.] base_state{OK}[.]) @  'DG_DNA_unbind'
 
-##[Kim et al '13] [Khanna et al '09]
-#'OGG mismatch excision' \
-#     DG(dbd!1, cat,   type~OGG), DNA(e5~lig!0), DNA(e3~lig!0, dg!1, base_state~damaged, base~oxoG?, e5~lig!2), DNA(e3~lig!2) -> \
-#     DG(dbd,   cat!1, type~OGG), DNA(e5~PUA!0), DNA(e3~NA!0,  dg!1, base_state~gapped,  base~AP?,   e5~NA!2 ),   DNA(e3~P!2) \
-#     @ 'OGG_excision'
+'DG release on unligated DNA'
+    DG(cat[1]), DNA(e5{NA} dg[1] e3{NA}) -> DG(cat[.]), DNA(e3{NA} dg[.] e5{NA}) @  'DG_DNA_unbind'
 
-##[Hegde et al '12] [Khanna et al '09] 
-#'NEIL mismatch excision' \
-#     DG(dbd!1, cat,   type~NEIL), DNA(e5~lig!0), DNA(e3~lig!0, dg!1, base_state~damaged, base~oxoG?, e5~lig!2), DNA(e3~lig!2) -> \
-#     DG(dbd,   cat!1, type~NEIL), DNA(e5~P!0),   DNA(e3~NA!0,  dg!1, base_state~gapped,  base~AP?,   e5~NA!2),  DNA(e3~P!2) \
-#     @ 'NEIL_excision'
+/* [Kim et al '13] [Khanna et al '09] */
+//'OGG mismatch excision' \
+//     DG(dbd!1, cat,   type~OGG), DNA(e5~lig!0), DNA(e3~lig!0, dg!1, base_state~damaged, base~oxoG?, e5~lig!2), DNA(e3~lig!2) -> \
+//     DG(dbd,   cat!1, type~OGG), DNA(e5~PUA!0), DNA(e3~NA!0,  dg!1, base_state~gapped,  base~AP?,   e5~NA!2 ),   DNA(e3~P!2) \
+//     @ 'OGG_excision'
+
+/* [Hegde et al '12] [Khanna et al '09] */
+//'NEIL mismatch excision' \
+//     DG(dbd!1, cat,   type~NEIL), DNA(e5~lig!0), DNA(e3~lig!0, dg!1, base_state~damaged, base~oxoG?, e5~lig!2), DNA(e3~lig!2) -> \
+//     DG(dbd,   cat!1, type~NEIL), DNA(e5~P!0),   DNA(e3~NA!0,  dg!1, base_state~gapped,  base~AP?,   e5~NA!2),  DNA(e3~P!2) \
+//     @ 'NEIL_excision'
 
 
-## according to [MorBenDro07] this should be context sensitive
-'TDG TG mismatch excision' \
-     DG(cat!1, type~T), DNA(e3~lig!_, dg!1, base_state~damaged, base~T?,  e5~lig!_) -> \
-     DG(cat!1, type~T), DNA(e3~lig!_, dg!1, base_state~excised, base~AP?, e5~lig!_ ) @ 'TDG_excision_TG'
+// according to [MorBenDro07] this should be context sensitive
+'TDG TG mismatch excision'
+     DG(cat[1] type{T}[.]), DNA(e3{lig}[_] dg[1] base_state{damaged}[.] base{T} e5{lig}[_]) ->
+     DG(cat[1] type{T}[.]), DNA(e3{lig}[_] dg[1] base_state{excised}[.] base{AP} e5{lig}[_] ) @ 'TDG_excision_TG'
 
-'UDG mismatch excision' \
-     DG(cat!1, type~U), DNA(e3~lig!_, dg!1, base_state~damaged, base~U?,  e5~lig!_) -> \
-     DG(cat!1, type~U), DNA(e3~lig!_,  dg!1, base_state~excised, base~AP?, e5~lig!_ ) @ 'UDG_excision'
-
+'UDG mismatch excision'
+     DG(cat[1] type{U}[.]), DNA(e3{lig}[_] dg[1] base_state{damaged}[.] base{U} e5{lig}[_]) ->
+     DG(cat[1] type{U}[.]), DNA(e3{lig}[_] dg[1] base_state{excised}[.] base{AP} e5{lig}[_]) @ 'UDG_excision'
