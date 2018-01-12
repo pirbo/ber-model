@@ -1,3 +1,9 @@
+%var: av 6.022e23
+%var: k_on 1e-4
+%var: k_off 1e-1
+%var: k_on_unary 1e4
+%var: volume 6e-13
+
 %var: initial_TDG 0
 %var: initial_UDG 2230
 %var: initial_APE1 28000
