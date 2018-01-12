@@ -1,6 +1,7 @@
-%var: 'XRCC1_XRCC1_bind' $XRCC1_XRCC1_bind
-%var: 'XRCC1_XRCC1_unbind' $XRCC1_XRCC1_unbind
+%var: 'XRCC1_XRCC1_bind' k_on
+%var: 'XRCC1_XRCC1_unbind_v' 57e-6
+%var: 'XRCC1_XRCC1_unbind' (XRCC1_XRCC1_unbind_v * av * volume) * XRCC1_XRCC1_bind
 
-## XRCC1 dimerises
-'XRCC1 (un)binds XRCC1' \
-       XRCC1(xrc), XRCC1(xrc) <-> XRCC1(xrc!1), XRCC1(xrc!1) @ 'XRCC1_XRCC1_bind', 'XRCC1_XRCC1_unbind'
+// XRCC1 dimerises
+'XRCC1 (un)binds XRCC1'
+       XRCC1(xrc[.]), XRCC1(xrc[.]) <-> XRCC1(xrc[1]), XRCC1(xrc[1]) @ 'XRCC1_XRCC1_bind', 'XRCC1_XRCC1_unbind'
