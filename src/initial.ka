@@ -1,7 +1,15 @@
-%init: $initial_TDG  DG(type~T)
-%init: $initial_UDG  DG(type~U)
-%init: $initial_APE1 APE1()
-%init: $initial_POLb POLb()
-%init: $initial_LIG3 LIG3()
-%init: $initial_XRCC1 XRCC1()
-%init: $initial_PNKP PNKP()
+%var: initial_TDG 0
+%var: initial_UDG 2230
+%var: initial_APE1 28000
+%var: initial_POLb 2700
+%var: initial_LIG3 400
+%var: initial_XRCC1 1200
+%var: initial_PNKP 0
+
+%init: initial_TDG  DG(type{T})
+%init: initial_UDG  DG(type{U})
+%init: initial_APE1 APE1()
+%init: initial_POLb POLb()
+%init: initial_LIG3 LIG3()
+%init: initial_XRCC1 XRCC1()
+%init: initial_PNKP PNKP()
