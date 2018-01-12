@@ -1,26 +1,27 @@
-## add DNA damage: turn a certain percentage of C resp. 5mc into U resp. T
+/* add DNA damage: turn a certain percentage of C resp. 5mc into U resp. T */
 
-%var: 'n' DNA()
+%var: 'n' |DNA()|
 %var: 'bp' 'n'/2
 
-%var: 'damaged' DNA(base_state~damaged?)
+%var: 'damaged' |DNA(base_state{damaged})|
 %var: 'correct' 'bp' - ('damaged' / 2)
 
 %var: 'k_deam' 0
 %var: 'k_SSB' 0
 
-'5mc Deamination' DNA(base~C?, meth~true) -> DNA(meth~false, base~T?, base_state~damaged, init~damaged) @ 'k_deam'
-'C Deamination' DNA(base~C?, meth~false) -> DNA(meth~true, base~U?, base_state~damaged, init~damaged) @ 'k_deam'
+'5mc Deamination' DNA(base{C} meth{true}[.] base_state{#}[#] init{#}[#]) -> DNA(meth{false}[.] base{T} base_state{damaged}[.] init{damaged}[.]) @ 'k_deam'
+'C Deamination' DNA(base{C} meth{false}[.] base_state{#}[#] init{#}[#]) -> DNA(meth{true}[.] base{U} base_state{damaged}[.] init{damaged}[.]) @ 'k_deam'
 
-## Generates a one nt gap
-'SSB' DNA(e3~lig!1),DNA(e5~lig!1,base?,e3!2),DNA(e5!2) -> DNA(e3~P!1),DNA(e5~NA!1,base~AP?,base_state~gapped,init~damaged,e3~NA!2),DNA(e5~P!2) @ 'k_SSB' 
+// Generates a one nt gap
+'SSB' DNA(e3{lig}[1]), DNA(e5{lig}[1] base{# } base_state{#}[#] init{#}[#] e3{#}[2]), DNA(e5{#}[2]) ->
+      DNA(e3{P  }[1]), DNA(e5{NA }[1] base{AP} base_state{gapped}[.] init{damaged}[.] e3{NA}[2]), DNA(e5{P}[2]) @ 'k_SSB' 
 
+%var: deamination_percentage 10
+%var: damage_steps 2
+%var: 'deam_percent' deamination_percentage / 100
+%var: 'nCG' |DNA(base{C}[_])|
+%var: 'n5mCG' |DNA(init{mC}[_] base{C}[_])|
 
-%var: 'deam_percent' $deamination_percentage / 100
-%var: 'nCG' DNA(base~C!_)
-%var: 'n5mCG' DNA(init~mC!_, base~C!_)
+%mod: [T]>damage_steps do $UPDATE 'k_deam' 1e13 ; $PRINT ".";
 
-%mod: [T]>$damage_steps do ($UPDATE 'k_deam' 10000000000000 ; $PRINT <".">)
-
-%mod: 'damaged' > ('deam_percent' * 'bp') do \
-      ($UPDATE 'k_deam' 0.0)
+%mod: 'damaged' > ('deam_percent' * 'bp') do $UPDATE 'k_deam' 0.0;
