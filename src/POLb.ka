@@ -1,110 +1,115 @@
-%var: 'POLb_DNA_bind' $POLb_DNA_bind
-%var: 'POLb_DNA_bind_unary' $POLb_DNA_bind_unary
+%var: 'POLb_DNA_bind' k_on
+%var: 'POLb_DNA_bind_unary' k_on_unary
 
-%var: 'POLb_DNA_unbind_ns' $POLb_DNA_unbind_ns # >50nM in [Liu et al 07] assuming 100nM
-%var: 'POLb_DNA_unbind_gapped_dRP' $POLb_DNA_unbind_gapped_dRP
-%var: 'POLb_DNA_unbind_gapped' $POLb_DNA_unbind_gapped
-%var: 'POLb_DNA_unbind_nicked' $POLb_DNA_unbind_nicked
-%var: 'POLb_DNA_unbind_AP' $POLb_DNA_unbind_AP
+%var: POLb_DNA_unbind_ns_v 1e-7
+%var: POLb_DNA_unbind_gapped_dRP_v 1e-9
+%var: POLb_DNA_unbind_gapped_v 1e-9
+%var: POLb_DNA_unbind_nicked_v 1e-8
+%var: POLb_DNA_unbind_AP_v 1e-7
+%var: 'POLb_DNA_unbind_ns' (POLb_DNA_unbind_ns_v * av * volume) * POLb_DNA_bind // >50nM in [Liu et al 07] assuming 100nM
+%var: 'POLb_DNA_unbind_gapped_dRP' (POLb_DNA_unbind_gapped_dRP_v * av * volume) * POLb_DNA_bind
+%var: 'POLb_DNA_unbind_gapped' (POLb_DNA_unbind_gapped_v * av * volume) * POLb_DNA_bind
+%var: 'POLb_DNA_unbind_nicked' (POLb_DNA_unbind_nicked_v * av * volume) * POLb_DNA_bind
+%var: 'POLb_DNA_unbind_AP' (POLb_DNA_unbind_AP_v * av * volume) * POLb_DNA_bind
 
-%var: 'POLb_lyase' $POLb_lyase
-%var: 'POLb_polymerase' $POLb_polymerase
-%var: 'POLb_LP_polymerase' $POLb_LP_polymerase
+%var: 'POLb_lyase' 0.75
+%var: 'POLb_polymerase' 0.45
+%var: 'POLb_LP_polymerase' 0.45
 
 
-## POLb agent's actions 
+/* POLb agent's actions */
 
-## POLb binds (gapped or nicked) DNA (in the absence or presence of XRCC1)
-'POLb DNA AP or gapped binding 1'\
-      POLb(dbd, xrc),DNA(base~AP!_,pol) -> POLb(dbd!1,xrc),DNA(base~AP!_,pol!1) @ 'POLb_DNA_bind'
-'POLb DNA AP or gapped binding 2'\
-      POLb(dbd),DNA(base~AP!_,pol, xrc) -> POLb(dbd!1),DNA(base~AP!_,pol!1,xrc) @ 'POLb_DNA_bind'
-'POLb DNA AP or gapped binding unary'\
-      POLb(dbd,  xrc!1),DNA(base~AP!_, pol,   xrc!2),XRCC1(pol!1, dbd!2) -> \
-      POLb(dbd!3,xrc!1),DNA(base~AP!_, pol!3, xrc!2),XRCC1(pol!1, dbd!2) @ 'POLb_DNA_bind_unary'
+// POLb binds (gapped or nicked) DNA (in the absence or presence of XRCC1)
+'POLb DNA AP or gapped binding 1'
+      POLb(dbd[.] xrc[.]), DNA(base{AP}[_] pol[.]) -> POLb(dbd[1] xrc[.]), DNA(base{AP}[_] pol[1]) @ 'POLb_DNA_bind'
+'POLb DNA AP or gapped binding 2'
+      POLb(dbd[.]), DNA(base{AP}[_] pol[.] xrc[.]) -> POLb(dbd[1]), DNA(base{AP}[_] pol[1] xrc[.]) @ 'POLb_DNA_bind'
+'POLb DNA AP or gapped binding unary'
+      POLb(dbd[.] xrc[1]),DNA(base{AP}[_] pol[.]   xrc[2]),XRCC1(pol[1] dbd[2]) ->
+      POLb(dbd[3] xrc[1]), DNA(base{AP}[_] pol[3] xrc[2]), XRCC1(pol[1] dbd[2]) @ 'POLb_DNA_bind_unary'
 
-'POLb DNA nicked binding 1'\
-      POLb(dbd,xrc),DNA(base!_, pol,e3~OH?) -> POLb(dbd!1,xrc),DNA(base!_, pol!1,e3~OH?) @ 'POLb_DNA_bind'
-'POLb DNA nicked binding 2'\
-      POLb(dbd),DNA(base!_, pol,e3~OH?,xrc) -> POLb(dbd!1),DNA(base!_, pol!1,e3~OH?,xrc) @ 'POLb_DNA_bind'
-'POLb DNA nicked binding unary'\
-      POLb(dbd,  xrc!1),DNA(base!_, pol,  e3~OH?,xrc!2),XRCC1(pol!1,dbd!2) -> \
-      POLb(dbd!3,xrc!1),DNA(base!_, pol!3,e3~OH?,xrc!2),XRCC1(pol!1,dbd!2) @ 'POLb_DNA_bind_unary'
+'POLb DNA nicked binding 1'
+      POLb(dbd[.] xrc[.]), DNA(base[_] pol[.] e3{OH}) -> POLb(dbd[1] xrc[.]), DNA(base[_] pol[1] e3{OH}) @ 'POLb_DNA_bind'
+'POLb DNA nicked binding 2'
+      POLb(dbd[.]), DNA(base[_] pol[.] e3{OH} xrc[.]) -> POLb(dbd[1]), DNA(base[_] pol[1] e3{OH} xrc[.]) @ 'POLb_DNA_bind'
+'POLb DNA nicked binding unary'
+      POLb(dbd[.] xrc[1]), DNA(base[_] pol[.]  e3{OH} xrc[2]), XRCC1(pol[1] dbd[2]) ->
+      POLb(dbd[3] xrc[1]), DNA(base[_] pol[3] e3{OH} xrc[2]), XRCC1(pol[1] dbd[2]) @ 'POLb_DNA_bind_unary'
 
-## POLb unbinding
-## POLb has no affinity for normal or mismatch DNA duplex
-'POLb duplex DNA unbinding'\
-      POLb(dbd!1),DNA(base_state~OK,pol!1,e3~lig?) -> POLb(dbd),DNA(base_state~OK,pol,e3~lig?) @ 'POLb_DNA_unbind_ns'
+// POLb unbinding
+// POLb has no affinity for normal or mismatch DNA duplex
+'POLb duplex DNA unbinding'
+      POLb(dbd[1]), DNA(base_state{OK}[.] pol[1] e3{lig}) -> POLb(dbd[.]), DNA(base_state{OK}[.] pol[.] e3{lig}) @ 'POLb_DNA_unbind_ns'
 
-'POLb mismatch DNA unbinding'\
-      POLb(dbd!1),DNA(base_state~damaged,pol!1,e3~lig?) -> POLb(dbd),DNA(base_state~damaged,pol,e3~lig?) @ 'POLb_DNA_unbind_ns'
+'POLb mismatch DNA unbinding'
+      POLb(dbd[1]), DNA(base_state{damaged}[.] pol[1] e3{lig}) -> POLb(dbd[.]), DNA(base_state{damaged}[.] pol[.] e3{lig}) @ 'POLb_DNA_unbind_ns'
 
-## Specific affinity for POLb
-'POLb gapped DNA with dRP flap unbinding' \
-      POLb(dbd!1), DNA(base_state~gapped, pol!1,e3!2),DNA(e5~dRP!2) -> \
-      POLb(dbd  ), DNA(base_state~gapped, pol  ,e3!2),DNA(e5~dRP!2) \
+// Specific affinity for POLb
+'POLb gapped DNA with dRP flap unbinding'
+      POLb(dbd[1]), DNA(base_state{gapped}[.] pol[1] e3[2]), DNA(e5{dRP}[2]) ->
+      POLb(dbd[.]), DNA(base_state{gapped}[.] pol[.]  e3[2]), DNA(e5{dRP}[2])
       @ 'POLb_DNA_unbind_gapped_dRP'
 
-'POLb 1nt gapped DNA unbinding' \
-      POLb(dbd!1), DNA(base_state~gapped, pol!1,e3!2),DNA(e5~P!2) -> \
-      POLb(dbd  ), DNA(base_state~gapped, pol  ,e3!2),DNA(e5~P!2) \
+'POLb 1nt gapped DNA unbinding'
+      POLb(dbd[1]), DNA(base_state{gapped}[.] pol[1] e3[2]), DNA(e5{P}[2]) ->
+      POLb(dbd[.]), DNA(base_state{gapped}[.] pol[.]  e3[2]), DNA(e5{P}[2])
       @ 'POLb_DNA_unbind_gapped'
 
-'POLb nicked DNA unbinding' \
-      POLb(dbd!1), DNA(base_state~OK, pol!1,e3~OH!_) -> \
-      POLb(dbd  ), DNA(base_state~OK, pol  ,e3~OH!_) \
+'POLb nicked DNA unbinding'
+      POLb(dbd[1]), DNA(base_state{OK}[.] pol[1] e3{OH}[_]) ->
+      POLb(dbd[.]), DNA(base_state{OK}[.] pol[.] e3{OH}[_])
       @ 'POLb_DNA_unbind_nicked'
 
-'POLb AP site unbinding' \
-      POLb(dbd!1), DNA(base_state~excised,pol!1) -> POLb(dbd), DNA(base_state~excised,pol) \
+'POLb AP site unbinding'
+      POLb(dbd[1]), DNA(base_state{excised}[.] pol[1]) -> POLb(dbd[.]), DNA(base_state{excised}[.] pol[.])
       @ 'POLb_DNA_unbind_AP'
 
 
-## POLb catalytic activities
-## POLb repairs 5' dRP end
+// POLb catalytic activities
+// POLb repairs 5' dRP end
 %token: POLb_lyase_t
-'POLb dRP lyase' \
-      POLb(dbd!1), DNA(pol!1, e3!2), DNA(e5~dRP!2) -> \
-      POLb(dbd!1), DNA(pol!1, e3!2), DNA(e5~P!2  ) | 1 : POLb_lyase_t @ 'POLb_lyase'
+'POLb dRP lyase'
+      POLb(dbd[1]), DNA(pol[1] e3[2]), DNA(e5{dRP}[2]) ->
+      POLb(dbd[1]), DNA(pol[1] e3[2]), DNA(e5{P}[2]  ) | 1 POLb_lyase_t @ 'POLb_lyase'
 %obs: 'POLb_act_lyase' |POLb_lyase_t|
 
-## POLb inserts correct base
+// POLb inserts correct base
 %token: POLb_polymerase
-'POLb polymerase A on gap' \
-      POLb(dbd!1), DNA(e3~OH !0), DNA(e5~NA!0,  pol!1, base_state~gapped, base~AP!2, e3~NA!_), DNA(base~T!2) -> \
-      POLb(dbd  ), DNA(e3~lig!0), DNA(e5~lig!0, pol  , base_state~OK,	  base~A !2, e3~OH!_), DNA(base~T!2) | 1 : POLb_polymerase @ 'POLb_polymerase'
-'POLb polymerase T on gap' \
-      POLb(dbd!1), DNA(e3~OH !0), DNA(e5~NA!0,  pol!1, base_state~gapped, base~AP!2, e3~NA!_), DNA(base~A!2) -> \
-      POLb(dbd  ), DNA(e3~lig!0), DNA(e5~lig!0, pol  , base_state~OK,	  base~T !2, e3~OH!_), DNA(base~A!2) | 1 : POLb_polymerase  @ 'POLb_polymerase'
-'POLb polymerase C on gap' \
-      POLb(dbd!1), DNA(e3~OH !0), DNA(e5~NA!0,  pol!1, base_state~gapped, base~AP!2, e3~NA!_), DNA(base~G!2) -> \
-      POLb(dbd  ), DNA(e3~lig!0), DNA(e5~lig!0, pol  , base_state~OK,	  base~C !2, e3~OH!_), DNA(base~G!2) | 1 : POLb_polymerase  @ 'POLb_polymerase'
-'POLb polymerase G on gap' \
-      POLb(dbd!1), DNA(e3~OH !0), DNA(e5~NA!0,  pol!1, base_state~gapped, base~AP!2, e3~NA!_), DNA(base~C!2) -> \
-      POLb(dbd  ), DNA(e3~lig!0), DNA(e5~lig!0, pol  , base_state~OK,	  base~G !2, e3~OH!_), DNA(base~C!2) | 1 : POLb_polymerase  @ 'POLb_polymerase'
+'POLb polymerase A on gap'
+      POLb(dbd[1]), DNA(e3{OH}[0]), DNA(e5{NA}[0] pol[1] base_state{gapped}[.] base{AP}[2] e3{NA}[_]), DNA(base{T}[2]) ->
+      POLb(dbd[.]), DNA(e3{lig}[0]), DNA(e5{lig}[0] pol[.] base_state{OK}[.] base{A}[2] e3{OH}[_]), DNA(base{T}[2]) | 1 POLb_polymerase @ 'POLb_polymerase'
+'POLb polymerase T on gap'
+      POLb(dbd[1]), DNA(e3{OH}[0]), DNA(e5{NA}[0] pol[1] base_state{gapped}[.] base{AP}[2] e3{NA}[_]), DNA(base{A}[2]) ->
+      POLb(dbd[.]), DNA(e3{lig}[0]), DNA(e5{lig}[0] pol[.] base_state{OK}[.] base{T}[2] e3{OH}[_]), DNA(base{A}[2]) | 1 POLb_polymerase  @ 'POLb_polymerase'
+'POLb polymerase C on gap'
+      POLb(dbd[1]), DNA(e3{OH}[0]), DNA(e5{NA}[0] pol[1] base_state{gapped}[.] base{AP}[2] e3{NA}[_]), DNA(base{G}[2]) ->
+      POLb(dbd[.]), DNA(e3{lig}[0]), DNA(e5{lig}[0] pol[.] base_state{OK}[.] base{C}[2] e3{OH}[_]), DNA(base{G}[2]) | 1 POLb_polymerase  @ 'POLb_polymerase'
+'POLb polymerase G on gap'
+      POLb(dbd[1]), DNA(e3{OH}[0]), DNA(e5{NA}[0] pol[1] base_state{gapped}[.] base{AP}[2] e3{NA}[_]), DNA(base{C}[2]) ->
+      POLb(dbd[.]), DNA(e3{lig}[0]), DNA(e5{lig}[0] pol[.] base_state{OK}[.] base{G}[2] e3{OH}[_]), DNA(base{C}[2]) | 1 POLb_polymerase  @ 'POLb_polymerase'
 %obs: 'POLb_act_poly' |POLb_polymerase|
 
 
-# Long patch repair mechanism (only if XRCC1 is not present)
-# Sketch:
-#    pol
-#    5' b-OH ... -b 3'
-#      |         |
-#    3' b---------b 5'
-# %token: LP_move
-# 'POLb LP polymerase A and move' \
-#       POLb(dbd!1), DNA(pol!1, base!2, xrc, e3~OH?  ), DNA(base!2, e5~lig!3), DNA(e3~lig!3, base~T!4), DNA(base!4) -> \
-#       POLb(dbd  ), DNA(pol  , base!2, xrc, e3~lig!5), DNA(base!2, e5~lig!3), DNA(e3~lig!3, base~T!6), DNA(base  ), DNA(e5~lig!5, base~A!6, pol, base_state~OK, init~A, e3~OH) \
-#       | 1 : LP_move @ 'POLb_LP_polymerase'
-# 'POLb LP polymerase T and move' \
-#       POLb(dbd!1), DNA(pol!1, base!2, xrc, e3~OH?  ), DNA(base!2, e5~lig!3), DNA(e3~lig!3, base~A!4), DNA(base!4) -> \
-#       POLb(dbd  ), DNA(pol  , base!2, xrc, e3~lig!5), DNA(base!2, e5~lig!3), DNA(e3~lig!3, base~A!6), DNA(base  ), DNA(e5~lig!5, base~T!6, pol, base_state~OK, init~T, e3~OH) \
-#       | 1 : LP_move @ 'POLb_LP_polymerase'
-# 'POLb LP polymerase C and move' \
-#       POLb(dbd!1), DNA(pol!1, base!2, xrc, e3~OH?  ), DNA(base!2, e5~lig!3), DNA(e3~lig!3, base~G!4), DNA(base!4) -> \
-#       POLb(dbd  ), DNA(pol  , base!2, xrc, e3~lig!5), DNA(base!2, e5~lig!3), DNA(e3~lig!3, base~G!6), DNA(base  ), DNA(e5~lig!5, base~C!6, pol, base_state~OK, init~C, e3~OH) \
-#       | 1 : LP_move @ 'POLb_LP_polymerase'
-# 'POLb LP polymerase G and move' \
-#       POLb(dbd!1), DNA(pol!1, base!2, xrc, e3~OH?  ), DNA(base!2, e5~lig!3), DNA(e3~lig!3, base~C!4), DNA(base!4) -> \
-#       POLb(dbd  ), DNA(pol  , base!2, xrc, e3~lig!5), DNA(base!2, e5~lig!3), DNA(e3~lig!3, base~C!6), DNA(base  ), DNA(e5~lig!5, base~G!6, pol, base_state~OK, init~G, e3~OH) \
-#       | 1 : LP_move @ 'POLb_LP_polymerase'
+// Long patch repair mechanism (only if XRCC1 is not present)
+// Sketch:
+//    pol
+//    5' b-OH ... -b 3'
+//      |         |
+//    3' b---------b 5'
+// %token: LP_move
+// 'POLb LP polymerase A and move'
+//       POLb(dbd[1]), DNA(pol[1], base[2], xrc, e3{OH}?  ), DNA(base[2], e5~lig[3]), DNA(e3~lig[3], base~T!4), DNA(base!4) ->
+//       POLb(dbd  ), DNA(pol  , base[2], xrc, e3~lig!5), DNA(base[2], e5~lig[3]), DNA(e3~lig[3], base~T!6), DNA(base  ), DNA(e5~lig!5, base~A!6, pol, base_state~OK, init~A, e3{OH})
+//       | 1 : LP_move @ 'POLb_LP_polymerase'
+// 'POLb LP polymerase T and move'
+//       POLb(dbd[1]), DNA(pol[1], base[2], xrc, e3{OH}?  ), DNA(base[2], e5~lig[3]), DNA(e3~lig[3], base~A!4), DNA(base!4) ->
+//       POLb(dbd  ), DNA(pol  , base[2], xrc, e3~lig!5), DNA(base[2], e5~lig[3]), DNA(e3~lig[3], base~A!6), DNA(base  ), DNA(e5~lig!5, base~T!6, pol, base_state~OK, init~T, e3{OH})
+//       | 1 : LP_move @ 'POLb_LP_polymerase'
+// 'POLb LP polymerase C and move'
+//       POLb(dbd[1]), DNA(pol[1], base[2], xrc, e3{OH}?  ), DNA(base[2], e5~lig[3]), DNA(e3~lig[3], base~G!4), DNA(base!4) ->
+//       POLb(dbd  ), DNA(pol  , base[2], xrc, e3~lig!5), DNA(base[2], e5~lig[3]), DNA(e3~lig[3], base~G!6), DNA(base  ), DNA(e5~lig!5, base~C!6, pol, base_state~OK, init~C, e3{OH})
+//       | 1 : LP_move @ 'POLb_LP_polymerase'
+// 'POLb LP polymerase G and move'
+//       POLb(dbd[1]), DNA(pol[1], base[2], xrc, e3{OH}?  ), DNA(base[2], e5~lig[3]), DNA(e3~lig[3], base~C!4), DNA(base!4) ->
+//       POLb(dbd  ), DNA(pol  , base[2], xrc, e3~lig!5), DNA(base[2], e5~lig[3]), DNA(e3~lig[3], base~C!6), DNA(base  ), DNA(e5~lig!5, base~G!6, pol, base_state~OK, init~G, e3{OH})
+//       | 1 : LP_move @ 'POLb_LP_polymerase'
