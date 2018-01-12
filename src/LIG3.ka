@@ -1,50 +1,51 @@
-%var: 'LIG3_DNA_bind' $LIG3_DNA_bind
-%var: 'LIG3_DNA_bind_unary' $LIG3_DNA_bind_unary
-%var: 'LIG3_DNA_unbind' $LIG3_DNA_unbind
-%var: 'LIG3_ligase' $LIG3_ligase
+%var: 'LIG3_DNA_bind' k_on
+%var: 'LIG3_DNA_bind_unary' k_on_unary
+%var: LIG3_DNA_unbind_v 5e-9
+%var: 'LIG3_DNA_unbind' LIG3_DNA_bind / (LIG3_DNA_unbind_v * 6.022e23 * volume) // Pirbo: I copy as it is but this is really weird
+%var: 'LIG3_ligase' 0.04
 
-## LIG3 agent's actions
+/* LIG3 agent's actions */
 
-## LIG3 binds to (nicked or gapped) DNA (in the absence or presence of XRCC1)
-'LIG3 nicked DNA binding 1' \
-      LIG3(dbd  , xrc), DNA(lig,   e3~OH!1), DNA(e5~P!1) -> \
-      LIG3(dbd!2, xrc), DNA(lig!2, e3~OH!1), DNA(e5~P!1) \
-      @ 'LIG3_DNA_bind' ##bi-molecular
+// LIG3 binds to (nicked or gapped) DNA (in the absence or presence of XRCC1)
+'LIG3 nicked DNA binding 1'
+      LIG3(dbd[.] xrc[.]), DNA(lig[.] e3{OH}[1]), DNA(e5{P}[1]) ->
+      LIG3(dbd[2] xrc[.]), DNA(lig[2] e3{OH}[1]), DNA(e5{P}[1])
+      @ 'LIG3_DNA_bind' //bi-molecular
 
-'LIG3 nicked DNA binding 2' \
-      LIG3(dbd  ), DNA(lig,   e3~OH!1, xrc), DNA(e5~P!1) -> \
-      LIG3(dbd!2), DNA(lig!2, e3~OH!1, xrc), DNA(e5~P!1) \
-      @ 'LIG3_DNA_bind' ##bi-molecular
+'LIG3 nicked DNA binding 2'
+      LIG3(dbd[.]), DNA(lig[.] e3{OH}[1] xrc[.]), DNA(e5{P}[1]) ->
+      LIG3(dbd[2]), DNA(lig[2] e3{OH}[1] xrc[.]), DNA(e5{P}[1])
+      @ 'LIG3_DNA_bind' //bi-molecular
 
-'LIG3 nicked DNA binding unary' \
-      LIG3(dbd  , xrc!1), DNA(lig,   e3~OH!2, xrc!3), DNA(e5~P!2), XRCC1(lig!1, dbd!3) -> \
-      LIG3(dbd!4, xrc!1), DNA(lig!4, e3~OH!2, xrc!3), DNA(e5~P!2), XRCC1(lig!1, dbd!3) \
-      @ 'LIG3_DNA_bind_unary'  ##uni-molecular
+'LIG3 nicked DNA binding unary'
+      LIG3(dbd[.] xrc[1]), DNA(lig[.] e3{OH}[2] xrc[3]), DNA(e5{P}[2]), XRCC1(lig[1] dbd[3]) ->
+      LIG3(dbd[4] xrc[1]), DNA(lig[4] e3{OH}[2] xrc[3]), DNA(e5{P}[2]), XRCC1(lig[1] dbd[3])
+      @ 'LIG3_DNA_bind_unary'  //uni-molecular
 
-'LIG3 gapped DNA binding 1' \
-      LIG3(dbd  , xrc), DNA(e5~NA?, lig,   e3~NA?) -> \
-      LIG3(dbd!1, xrc), DNA(e5~NA?, lig!1, e3~NA?) \
-      @ 'LIG3_DNA_bind' ##bi-molecular
+'LIG3 gapped DNA binding 1'
+      LIG3(dbd[.] xrc[.]), DNA(e5{NA} lig[.] e3{NA}) ->
+      LIG3(dbd[1] xrc[.]), DNA(e5{NA} lig[1] e3{NA})
+      @ 'LIG3_DNA_bind' //bi-molecular
 
-'LIG3 gapped DNA binding 2' \
-      LIG3(dbd  ), DNA(e5~NA?, lig,   xrc, e3~NA?) -> \
-      LIG3(dbd!1), DNA(e5~NA?, lig!1, xrc, e3~NA?) \
-      @ 'LIG3_DNA_bind' ##bi-molecular
+'LIG3 gapped DNA binding 2'
+      LIG3(dbd[.]), DNA(e5{NA} lig[.] xrc[.] e3{NA}) ->
+      LIG3(dbd[1]), DNA(e5{NA} lig[1] xrc[.] e3{NA})
+      @ 'LIG3_DNA_bind' //bi-molecular
 
-'LIG3 gapped DNA binding unary' \
-      LIG3(dbd  , xrc!1), DNA(e5~NA?, lig,   xrc!2, e3~NA?), XRCC1(lig!1, dbd!2) -> \
-      LIG3(dbd!3, xrc!1), DNA(e5~NA?, lig!3, xrc!2, e3~NA?), XRCC1(lig!1, dbd!2) \
-      @ 'LIG3_DNA_bind_unary' ##uni-molecular
+'LIG3 gapped DNA binding unary'
+      LIG3(dbd[.] xrc[1]), DNA(e5{NA} lig[.] xrc[2] e3{NA}), XRCC1(lig[1] dbd[2]) ->
+      LIG3(dbd[3] xrc[1]), DNA(e5{NA} lig[3] xrc[2] e3{NA}), XRCC1(lig[1] dbd[2])
+      @ 'LIG3_DNA_bind_unary' //uni-molecular
 
-'LIG3 DNA unbinding' \
-      LIG3(dbd!1), DNA(lig!1) -> LIG3(dbd), DNA(lig) \
+'LIG3 DNA unbinding'
+      LIG3(dbd[1]), DNA(lig[1]) -> LIG3(dbd[.]), DNA(lig[.])
       @ 'LIG3_DNA_unbind'
 
-## LIG3 ligates DNA (high turnover)
+// LIG3 ligates DNA (high turnover)
 %token: LIG3_lig_t
-'LIG3 ligase action' \
-      LIG3(dbd!1), DNA(e5~lig?, lig!1, e3~OH!2 ), DNA(e5~P!2  ) -> \
-      LIG3(dbd),   DNA(e5~lig?, lig,   e3~lig!2), DNA(e5~lig!2) | 1:LIG3_lig_t \
+'LIG3 ligase action'
+      LIG3(dbd[1]), DNA(e5{lig} lig[1] e3{OH}[2]), DNA(e5{P}[2]) ->
+      LIG3(dbd[.]), DNA(e5{lig} lig[.] e3{lig}[2]), DNA(e5{lig}[2]) | 1 LIG3_lig_t
       @ 'LIG3_ligase'
 
 %obs: 'LIG3_act_t' |LIG3_lig_t|
